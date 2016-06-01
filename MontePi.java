@@ -49,7 +49,7 @@ ipublic class MontePi {
         
         if (myrank = 0) {
                 for (proc=1; proc<size ; proc++) {
-                        MPI Recv(count_inside, 1 ,MPI_REAL, proc, tag, MPI COMMWORLD, status) ;
+                        MPI Recv(count_inside, 1 ,MPI_REAL, proc, tag, MPI_COMMWORLD, status) ;
                         count_inside++;
                         }
                 System.out.println("count_inside=" +count_inside);
@@ -61,7 +61,7 @@ ipublic class MontePi {
 
         else {
 
-                System.out.println("Processor &&myrank sending results &&count_inside to master process")
+                System.out.println("Processor" +myrank "sending results" +count_inside "to master process")
                 MPI Send(count_inside , 1 ,MPI_REAL, master , tag ,MPI_COMMWORLD) ;
 
         }
