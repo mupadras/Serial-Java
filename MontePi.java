@@ -2,7 +2,7 @@
 import MPI.*;
 import java.util.Random;
 
-ipublic class MontePi {
+public class MontePi {
         public static void main(String[] args) throws MPIException
 
         {
@@ -42,7 +42,7 @@ ipublic class MontePi {
         
         if (myrank <1) {
                 
-                System.out.println(" Usage: MontePi number_of_iterations \n"
+                System.out.println(" Usage: MontePi number_of_iterations \n");
                 MPI.Finalize();
                 exit(-1);
                 }
@@ -62,7 +62,7 @@ ipublic class MontePi {
         else {
 
                 System.out.println("Processor" +myrank "sending results" +count_inside "to master process")
-                MPI Send(count_inside , 1 ,MPI_REAL, master , tag ,MPI_COMMWORLD) ;
+                MPI Send(count_inside, 1, MPI_REAL, master, tag, MPI_COMMWORLD) ;
 
         }
 
