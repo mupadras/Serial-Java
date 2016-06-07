@@ -2,7 +2,7 @@ package com.company;
 import java.util.*;
 import java.io.*;
 
-public class MainKMeans
+public class Main
 {
     static int N = 1000;
     static int K = 10;
@@ -12,6 +12,7 @@ public class MainKMeans
     static double[][] prevCentroids = new double[10][3];
     static double[][] newCentroids = new double[10][3];
     static double MIN, MAX;
+    static double THRESHOLD = 0.05;
 
     public static void calculateMinMax()
     {
@@ -37,6 +38,15 @@ public class MainKMeans
         Random rand= new Random();
         double randomNum = rand.nextDouble() * (max - min) + min;
         return randomNum;
+    }
+
+    public static double getDistance(double[] pointA, double[] pointB)
+    {
+        double distance = 0.0;
+        for (int i = 0; i < 3; i++) {
+            distance += Math.pow(pointA[i] - pointB[i],2);
+        }
+        return Math.sqrt(distance);
     }
 
     public static void getRandomPoints()
@@ -83,6 +93,8 @@ public class MainKMeans
     public static void getCentroids()
     {
         double[][] sumForCentroid = new double[10][3];
+        int[] sizeOfCluster = new int[10];
+        Arrays.fill(sizeOfCluster, 0);
         for(int i=0; i<10; i++)
         {
             for (int j=0; j<3; j++)
@@ -100,14 +112,24 @@ public class MainKMeans
                     sumForCentroid[j][0] = sumForCentroid[j][0] + clusteredData[i][1];
                     sumForCentroid[j][1] = sumForCentroid[j][1] + clusteredData[i][2];
                     sumForCentroid[j][2] = sumForCentroid[j][2] + clusteredData[i][3];
+                    sizeOfCluster[j]++;
                 }
             }
         }
+
         for(int i=0; i<10; i++)
         {
-            newCentroids[i][0] = (sumForCentroid[i][0])/3;
-            newCentroids[i][1] = (sumForCentroid[i][1])/3;
-            newCentroids[i][2] = (sumForCentroid[i][2])/3;
+            if(sizeOfCluster[i] == 0)
+            {
+                sizeOfCluster[i] = 1;
+            }
+        }
+
+        for(int i=0; i<10; i++)
+        {
+            newCentroids[i][0] = (sumForCentroid[i][0])/sizeOfCluster[i];
+            newCentroids[i][1] = (sumForCentroid[i][1])/sizeOfCluster[i];
+            newCentroids[i][2] = (sumForCentroid[i][2])/sizeOfCluster[i];
         }
         System.out.println("Prev Centroids: " + Arrays.deepToString(prevCentroids));
         System.out.println("New Centroids:  " + Arrays.deepToString(newCentroids)+ "\n");
@@ -157,15 +179,25 @@ public class MainKMeans
         calculateMinMax();
         getRandomPoints();
         clusterPoints();
-        //getCentroids();
-        //clusterPoints();
+        getCentroids();
 
-        //while(!areCentroidsSame())
-//        for(int i=0; i<5; i++)
-//        {
-//            clusterPoints();
-//            getCentroids();
-//        }
+        boolean centroidsConverged = false;
+
+        while(!centroidsConverged)
+        {
+            clusterPoints();
+            getCentroids();
+
+            centroidsConverged = true;
+
+            for(int i=0; i<10; i++)
+            {
+                if(getDistance(prevCentroids[i], newCentroids[i]) > THRESHOLD)
+                {
+                    centroidsConverged = false;
+                }
+            }
+        }
 
         String output = "kmeans_output.txt";
         FileWriter fw = new FileWriter(output);
