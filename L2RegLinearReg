@@ -86,6 +86,7 @@ public class L2RegLinearReg
     }
 
     // train the model with l2 regularizer 
+    //w = (x^{T} * X + \alpha * I)^{-1} * X^{T} * t
 
     private Matrix trainModel(Matrix data, Matrix target, Double alpha) {
         int row = data.getRowDimension();
