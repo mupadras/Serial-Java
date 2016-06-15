@@ -62,7 +62,7 @@ public class GradDescent {
 
     }
 
-    private static final double[][] GIVENDATA = {{200, 20000}, {300, 41000}, {900, 141000}, {800, 41000}, {400, 51000}, {500, 61500}};
+    private static final double[][] GIVENDATA = {{100, 12000}, {200, 41200}, {760, 98000}, {120, 67800}, {123, 58900}, {580, 61090}};
 
     public static void main(String[] args) {
         GradDescent gd = new GradDescent();
