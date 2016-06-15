@@ -1,0 +1,148 @@
+package com.company;
+
+/**
+ * Created by madhu on 6/11/16.
+ */
+import java.util.*;
+import java.io.*;
+import Jama.Matrix;
+
+
+public class WeightLinearReg
+
+{
+    public Double alpha;
+    public String trainingFile;
+    public String testingFile;
+    public void simpleLinearReg() {
+        alpha = 1.0;
+        trainingFile = "";
+        testingFile = "";
+    }
+
+    private Matrix CreateMatrix(String fileName) {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(fileName));
+            List<double[]> createArray = new ArrayList<double[]>();
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String pattern[] = line.split(",");
+                double data[] = new double[pattern.length];
+                for (int i = 0; i < pattern.length; ++i) {
+                    data[i] = Double.parseDouble(pattern[i]);
+                }
+                createArray.add(data);
+            }
+
+            if (createArray.size() > 0) {
+                int column = createArray.get(0).length;
+                int row = createArray.size();
+                Matrix matrix = new Matrix(row, column);
+                for (int r = 0; r < row; r++) {
+                    for (int c = 0; c < column; c++) {
+                        matrix.set(r, c, createArray.get(r)[c]);
+                    }
+                }
+                return matrix;
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        return new Matrix(0, 0);
+    }
+    private Matrix dataPointsObtain(Matrix dataGiven) {
+        Matrix attributes = dataGiven.getMatrix(0, dataGiven.getRowDimension() - 1, 0, dataGiven.getColumnDimension() - 2);
+        int row = attributes.getRowDimension();
+        int column = attributes.getColumnDimension() + 1;
+        Matrix modifiedAttributes = new Matrix(row, column);
+        for (int r = 0; r < row; r++) {
+            for (int c = 0; c < column; c++) {
+                if (c == 0) {
+                    modifiedAttributes.set(r, c, 1.0);
+                } else {
+                    modifiedAttributes.set(r, c, attributes.get(r, c-1));
+                }
+            }
+        }
+        return modifiedAttributes;
+    }
+    private Matrix obtainTarget(Matrix dataGiven) {
+        return dataGiven.getMatrix(0, dataGiven.getRowDimension() - 1, dataGiven.getColumnDimension() - 1, dataGiven.getColumnDimension() - 1);
+    }
+
+    private Matrix trainModel(Matrix data, Matrix target, Double alpha) {
+        int row = data.getRowDimension();
+        int column = data.getColumnDimension();
+        Matrix identity = Matrix.identity(column, column);
+        identity.times(alpha);
+        Matrix dataCopy = data.copy();
+        Matrix transponseData = dataCopy.transpose();
+        Matrix norm = transponseData.times(data);
+        Matrix circular = norm.plus(identity);
+        Matrix circularInverse = circular.inverse();
+        Matrix former = circularInverse.times(data.transpose());
+        Matrix giveWeight = former.times(target);
+
+        return giveWeight;
+    }
+
+    private double evaluatesimpleLinearRegressionModel(Matrix data, Matrix target, Matrix giveWeights) {
+        double error = 0.0;
+        int row = data.getRowDimension();
+        int column = data.getColumnDimension();
+        assert row == target.getRowDimension();
+        assert column == giveWeights.getColumnDimension();
+
+        Matrix predictTarget = predict(data, giveWeights);
+        for (int i = 0; i < row; i++) {
+            error = (target.get(i, 0) - predictTarget.get(i, 0)) * (target.get(i, 0) - predictTarget.get(i, 0));
+        }
+
+        return 0.5 * error;
+    }
+
+    private Matrix predict(Matrix data, Matrix giveWeights) {
+        int row = data.getRowDimension();
+        Matrix predictTarget = new Matrix(row, 1);
+        for (int i = 0; i < row; i++) {
+            double value = multiply(data.getMatrix(i, i, 0, data.getColumnDimension() -1 ), giveWeights);
+            //System.out.println(value);
+            predictTarget.set(i, 0, value);
+        }
+        return predictTarget;
+    }
+    private Double multiply(Matrix data, Matrix giveWeights) {
+        Double sum = 0.0;
+        int column = data.getColumnDimension();
+        for (int i = 0; i <column; i++) {
+            sum += data.get(0, i) * giveWeights.get(i, 0);
+        }
+        return sum;
+    }
+    public static void main(String[] args) {
+        simpleLinearReg lr = new simpleLinearReg();
+        try {
+            Matrix training = lr.CreateMatrix(lr.trainingFile);
+            Matrix testing = lr.CreateMatrix(lr.testingFile);
+
+            /** get the actual attributes, meanwhile add a N*1 column vector with value being all 1 as the first column of the attributes */
+            Matrix trainingData = lr.dataPointsObtain(training);
+            Matrix testingData = lr.dataPointsObtain(testing);
+
+            Matrix trainingTarget = lr.obtainTarget(training);
+            Matrix testingTarget = lr.obtainTarget(testing);
+
+            // Train the model.
+            Matrix giveWeights = lr.trainModel(trainingData, trainingTarget, lr.alpha);
+            for (int i = 0; i < giveWeights.getRowDimension(); i++) {
+                System.out.println(giveWeights.get(i, 0));
+            }
+
+
+}
+
+}
