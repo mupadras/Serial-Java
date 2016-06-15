@@ -7,18 +7,22 @@ import java.util.*;
 import java.io.*;
 import Jama.Matrix;
 
+//Creating a class for Linear Regression 
+//alpha is a coefficient whose value can be changed
 
-public class WeightLinearReg
+public class L2RegLinearReg
 
 {
     public Double alpha;
-    public String trainingFile;
-    public String testingFile;
+    public String trainFile;
+    public String testFile;
     public void simpleLinearReg() {
-        alpha = 1.0;
-        trainingFile = "";
-        testingFile = "";
+        alpha = 0.5;
+        trainFile = " ";
+        testFile = " ";
     }
+    
+// Reads the matrix from the input file
 
     private Matrix CreateMatrix(String fileName) {
         try {
@@ -54,6 +58,9 @@ public class WeightLinearReg
 
         return new Matrix(0, 0);
     }
+
+    // Target is the last column that is to be removed and 0 or 1 are added to the column of each row as bias
+
     private Matrix dataPointsObtain(Matrix dataGiven) {
         Matrix attributes = dataGiven.getMatrix(0, dataGiven.getRowDimension() - 1, 0, dataGiven.getColumnDimension() - 2);
         int row = attributes.getRowDimension();
@@ -70,9 +77,15 @@ public class WeightLinearReg
         }
         return modifiedAttributes;
     }
-    private Matrix obtainTarget(Matrix dataGiven) {
+
+    // Returns the last column values as they are the target and removed from the data given
+    
+    private Matrix obtainTarget(Matrix dataGiven) 
+    {
         return dataGiven.getMatrix(0, dataGiven.getRowDimension() - 1, dataGiven.getColumnDimension() - 1, dataGiven.getColumnDimension() - 1);
     }
+
+    // train the model with l2 regularizer 
 
     private Matrix trainModel(Matrix data, Matrix target, Double alpha) {
         int row = data.getRowDimension();
@@ -89,8 +102,10 @@ public class WeightLinearReg
 
         return giveWeight;
     }
+    
+    //Test the model
 
-    private double evaluatesimpleLinearRegressionModel(Matrix data, Matrix target, Matrix giveWeights) {
+    private double testLinearRegressionModel(Matrix data, Matrix target, Matrix giveWeights) {
         double error = 0.0;
         int row = data.getRowDimension();
         int column = data.getColumnDimension();
@@ -104,6 +119,8 @@ public class WeightLinearReg
 
         return 0.5 * error;
     }
+    
+    //Calculate the targets to be predicted based the weights deduced and known attributes
 
     private Matrix predict(Matrix data, Matrix giveWeights) {
         int row = data.getRowDimension();
@@ -115,6 +132,9 @@ public class WeightLinearReg
         }
         return predictTarget;
     }
+    
+    //Matrix multiplication
+    
     private Double multiply(Matrix data, Matrix giveWeights) {
         Double sum = 0.0;
         int column = data.getColumnDimension();
@@ -124,25 +144,37 @@ public class WeightLinearReg
         return sum;
     }
     public static void main(String[] args) {
-        simpleLinearReg lr = new simpleLinearReg();
+        simpleLinearReg rg = new simpleLinearReg();
         try {
-            Matrix training = lr.CreateMatrix(lr.trainingFile);
-            Matrix testing = lr.CreateMatrix(lr.testingFile);
+            Matrix train = rg.CreateMatrix(rg.trainFile);
+            Matrix test = rg.CreateMatrix(rg.testFile);
 
             /** get the actual attributes, meanwhile add a N*1 column vector with value being all 1 as the first column of the attributes */
-            Matrix trainingData = lr.dataPointsObtain(training);
-            Matrix testingData = lr.dataPointsObtain(testing);
+            Matrix trainData = rg.dataPointsObtain(train);
+            Matrix testData = rg.dataPointsObtain(test);
 
-            Matrix trainingTarget = lr.obtainTarget(training);
-            Matrix testingTarget = lr.obtainTarget(testing);
+            Matrix trainTarget = rg.obtainTarget(train);
+            Matrix testTarget = rg.obtainTarget(test);
 
             // Train the model.
-            Matrix giveWeights = lr.trainModel(trainingData, trainingTarget, lr.alpha);
+            Matrix giveWeights = rg.trainModel(trainData, trainTarget, rg.alpha);
             for (int i = 0; i < giveWeights.getRowDimension(); i++) {
                 System.out.println(giveWeights.get(i, 0));
             }
+            
+            //Test the model using given data
+            
+            double train_error = rg.testLinearRegressionModel(trainData, trainTarget, giveWeights);
+            double test_error = rg.testLinearRegressionModel(testData, testTarget, giveWeights);
+
+            System.out.println(train_error);
+            System.out.println(test_error);
+        }   catch (Exception e){
+            e.printStackTrace();
+            System.exit(1);
+        }
 
 
-}
+    }
 
 }
