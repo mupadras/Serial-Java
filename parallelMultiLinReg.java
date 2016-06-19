@@ -111,7 +111,6 @@ public class parallelMultiLinReg {
         int numPoints = Integer.parseInt(cmd.getOptionValue("N"));
         int numCoefficients = Integer.parseInt(cmd.getOptionValue("v"));
         int numThreads = Integer.parseInt(cmd.getOptionValue("T"));
-        boolean isBigEndian = Boolean.parseBoolean(cmd.getOptionValue("b"));
 
 
         try {
@@ -172,7 +171,7 @@ public class parallelMultiLinReg {
                 commTimer.start();
                 ParallelOptions.comm.allReduce(partialSST, partialSSE, MPI.SUM, MPI.SUM);
                 commTimer.stop();
-                ParallelOptions.comm.allReduce(intBuffer, numPoints, numCoefficients, MPI.INT, MPI.);
+                ParallelOptions.comm.allReduce(intBuffer, numPoints, numCoefficients, MPI.INT, MPI.INT);
                 commTimer.stop();
                 ParallelOptions.comm.allReduce(R2, MPI.INT, MPI.SUM);
                 commTimer.stop();
@@ -230,14 +229,11 @@ public class parallelMultiLinReg {
     
 
 
-            System.out.println("%d + %d alpha1 + %dalpha2  (R^2 = %d)\n",
-                    regression.alpha(0), regression.alpha(1), regression.alpha(2), regression.R2());
+            System.out.println(regression.alpha(0) + "+" regression.alpha(1) + "alpha1+" + regression.alpha(2) + "alpha2 "  + "(R2 = " + regression.R2 + ")" );
         }
     }
 
 
 }
-
-
 
 
