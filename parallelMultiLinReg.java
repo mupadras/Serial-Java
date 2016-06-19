@@ -30,7 +30,6 @@ public class parallelMultiLinReg {
     static {
         programOptions.addOption("N", true, "Total Number");
         programOptions.addOption("v", true, "Number of dependent variables");
-        programOptions.addOption("b", true, "Is big-endian?");
         programOptions.addOption("T", true, "Number of threads");
 
     }
@@ -101,7 +100,7 @@ public class parallelMultiLinReg {
 
         CommandLine cmd = parserResult.get();
         if (!(cmd.hasOption("N") && cmd.hasOption("v") &&
-                cmd.hasOption("t") && cmd.hasOption("m") && cmd.hasOption("b") &&
+                cmd.hasOption("t") &&
                 cmd.hasOption("T"))) {
             System.out.println(Utils.ERR_INVALID_PROGRAM_ARGUMENTS);
             new HelpFormatter().printHelp(Utils.PROGRAM_NAME, programOptions);
