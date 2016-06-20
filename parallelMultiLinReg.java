@@ -209,7 +209,7 @@ public class parallelMultiLinReg {
                 for (int i = 0; i < numPoints; ++i) {
                     reader.getPoint(i, point);
                     writer.println(i + "\t" + Doubles.join("\t", point) + "\t" +
-                            ((ParallelOptions.size > 1) ? intBuffer2.get(i) : clusterAssignments[i]));
+                            ((ParallelOptions.size > 1) ? intBuffer2.get(i) : R2[i]));
                 }
                 timer.stop();
                 print("    Done in " + timer.elapsed(TimeUnit.MILLISECONDS) +
