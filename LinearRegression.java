@@ -6,14 +6,14 @@ public class LinearRegression {
 
         public static void main(String[]args) {
 
-                int NMAX = 1000;
-                int n=0;
-                double []x = new double[NMAX];
-                double []y = new double[NMAX];
+               
+                int n=1000;
+                double []x = new double[n];
+                double []y = new double[n];
 
 
                 double sumx = 0.0; double sumy = 0.0; double sumz=0.0;
-                for (n=0; n<NMAX; n++) {
+                for (n=0; n<n; n++) {
                         sumx  = sumx +  x[n];
                         sumz = sumz + (x[n] * x[n]);
                         sumy  = sumy + y[n];
@@ -36,7 +36,7 @@ public class LinearRegression {
                 System.out.println("y   = " + beta1 + " * x + " + beta0);
 
 
-                int df = n - 2;
+                int df = n - 1;
                 double rss = 0.0;
                 double ssr = 0.0;
 
